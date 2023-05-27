@@ -1,0 +1,69 @@
+import wollok.game.*
+import snake.*
+
+program SnakeGame {
+	var manzana = new Manzana(position = game.origin())
+	var velocidad = 100
+
+	game.title("Snake Game")
+	game.cellSize(5)
+	game.width(100)
+	game.height(100)
+	
+	
+	
+	game.addVisual(manzana)
+	game.addVisual(snake)
+	snake.body().forEach{e => game.addVisual(e)}
+	
+	
+	
+	game.whenCollideDo(manzana, {
+		personaje => snake.agregarBody(new SnakeBody(position = snake.ultPosBody()))
+		game.addVisual(snake.body().last())
+		manzana.position(game.at(0.randomUpTo(10).truncate(0) * 5, 0.randomUpTo(10).truncate(0) * 10))
+		velocidad-= 2
+	})
+	
+	
+	game.whenCollideDo(snake, {e =>
+		if(e != manzana){
+			game.stop() 
+		}
+	})
+	
+	
+	game.onTick(velocidad, "movimiento",{
+			snake.moverDerecha()		
+		})
+	
+	keyboard.up().onPressDo({
+		game.removeTickEvent("movimiento")
+		game.onTick(velocidad, "movimiento",{
+			snake.moverArriba()		
+		})
+	})
+	
+	keyboard.down().onPressDo({
+		game.removeTickEvent("movimiento")
+		game.onTick(velocidad, "movimiento",{
+			snake.moverAbajo()		
+		})
+	})
+	
+	keyboard.right().onPressDo({
+		game.removeTickEvent("movimiento")
+		game.onTick(velocidad, "movimiento",{
+			snake.moverDerecha()		
+		})
+	})
+	
+	keyboard.left().onPressDo({
+		game.removeTickEvent("movimiento")
+		game.onTick(velocidad, "movimiento",{
+			snake.moverIzquierda()		
+		})
+	})
+
+	game.start()
+}
